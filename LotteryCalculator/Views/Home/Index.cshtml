@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@model LotteryCalculator.Models.TicketList
+
+@{
+    var chart = new Chart(600, 400);
+
+}
+
+@foreach (var ticket in Model.Tickets)
+{
+    ticket.Numbers = ticket.Numbers.OrderBy(x => x).ToList();
+    <a href="@Url.Action("GetChart", "Home", new { ticketToChart = new LotteryCalculator.Models.Ticket() })">
+        <div class="ticket">
+            @foreach (var number in ticket.Numbers)
+            {
+                <span style="display: inline-block;">@number.ToString() </span>
+            }
+            <span style="display:inline-block;">| Matches: @ticket.Matches | Fours: @ticket.Fours | Fives: @ticket.Fives | Sixes: @ticket.Sixes | Sevens: @ticket.Sevens | Profit/Loss: @ticket.GetProfit()</span>
+            <span style="display:inline-block;">| Matches: @ticket.MostRecentMatches</span>
+        </div>
+    </a>
+}
+
+<p>Average profit per ticket: £@Model.AverageProfit</p>
+<p>time taken: @Model.secondsTaken ms</p>

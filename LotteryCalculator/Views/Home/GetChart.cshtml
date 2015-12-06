@@ -1,0 +1,19 @@
+﻿@model LotteryCalculator.Models.Ticket
+
+@{
+    var history = Model.History;
+    var resultNumbers = new List<int>();
+    for (var i = 1; i <= Model.History.Count; i++)
+    {
+        resultNumbers.Add(i);
+    }
+    var chart = new Chart(600, 400);
+    chart.AddSeries(
+        name: "Cunt",
+        xValue: resultNumbers,
+        yValues: new[] { Model.History },
+        chartType: "line"
+        ).Write();
+
+
+}
