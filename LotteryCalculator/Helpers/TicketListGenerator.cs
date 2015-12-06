@@ -13,7 +13,7 @@ namespace LotteryCalculator.Helpers
         {
             var resultsList = new List<Result>();
 
-            foreach (var worksheet in Workbook.Worksheets(@"C:\dev\LotteryCalculator\LotteryCalculator\49s Results.xlsx"))
+            foreach (var worksheet in Workbook.Worksheets(@"C:\dev\Lottery\LotteryCalculator\49s Results.xlsx"))
             {
                 foreach (var row in worksheet.Rows)
                 {
@@ -63,7 +63,7 @@ namespace LotteryCalculator.Helpers
             {
                 numberOfTickets++;
 
-                ticket.History = new List<int>();
+                ticket.History = new List<double>();
 
                 foreach (var result in pastResults)
                 {
@@ -87,7 +87,7 @@ namespace LotteryCalculator.Helpers
                     }
                 }
 
-                ticket.Matches = ticket.History.Sum();
+                ticket.Matches = System.Convert.ToInt32(ticket.History.Sum());
 
                 var latestResults = pastResults[pastResults.Count - 1];
 

@@ -14,7 +14,7 @@ namespace LotteryCalculator.Models
         public int Sevens { get; set; }
         public int Fives { get; set; }
         public int Fours { get; set; }
-        public List<int> History { get; set; }
+        public List<double> History { get; set; }
 
         public double GetProfit()
         {
