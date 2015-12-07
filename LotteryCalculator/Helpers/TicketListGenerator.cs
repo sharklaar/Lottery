@@ -12,8 +12,8 @@ namespace LotteryCalculator.Helpers
         public List<Result> GetExcelShit()
         {
             var resultsList = new List<Result>();
-
-            foreach (var worksheet in Workbook.Worksheets(@"C:\dev\Lottery\LotteryCalculator\49s Results.xlsx"))
+            String path = HttpContext.Current.Server.MapPath("~/49s Results.xlsx");
+            foreach (var worksheet in Workbook.Worksheets(path))
             {
                 foreach (var row in worksheet.Rows)
                 {
