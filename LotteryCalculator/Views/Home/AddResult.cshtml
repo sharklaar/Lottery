@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewBag.Title = "AddResult";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model LotteryCalculator.Models.Result
+
+<h2>AddResult</h2>
+
+@using (Html.BeginForm())
+{
+    <fieldset>
+        @Html.TextBoxFor(model => model.Numbers[0])
+        @Html.TextBoxFor(model => model.Numbers[1])
+        @Html.TextBoxFor(model => model.Numbers[2])
+        @Html.TextBoxFor(model => model.Numbers[3])
+        @Html.TextBoxFor(model => model.Numbers[4])
+        @Html.TextBoxFor(model => model.Numbers[5])
+        @Html.TextBoxFor(model => model.Numbers[6])
+        @Html.TextBoxFor(model => model.DrawType)
+        @Html.TextBoxFor(model => model.Date, new { @class = "form-control datepicker", placeholder = "Draw date" })
+        <input type="submit" value="Submit"/>
+    </fieldset>
+}

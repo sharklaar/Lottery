@@ -1,4 +1,5 @@
 ﻿using Excel;
+using HtmlAgilityPack;
 using LotteryCalculator.Helpers;
 using LotteryCalculator.Models;
 using System;
@@ -15,14 +16,14 @@ namespace LotteryCalculator.Controllers
     {
         private Random _random = new Random();
         private TicketListGenerator _ticketListGenerator;
-
+        private DatabaseHelper _databaseHelper = new DatabaseHelper();
         public ActionResult Index()
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
             _ticketListGenerator = new TicketListGenerator();
 
-            var pastResults = _ticketListGenerator.GetExcelShit();
+            var pastResults = _databaseHelper.GetAllResults();
 
             //var myNumbers = new Ticket();
             //myNumbers.Numbers = new List<int>{
@@ -31,7 +32,7 @@ namespace LotteryCalculator.Controllers
             
             var listOfTickets = new List<Ticket>();
 
-            for (var i = 0; i <= 1000; i++)
+            for (var i = 0; i <= 100000; i++)
             {
                 var ticket = GetRandomNumbers(15);
                 listOfTickets.Add(ticket);
@@ -74,7 +75,34 @@ namespace LotteryCalculator.Controllers
             return View(ticketToChart);
         }
 
-        
+        public ActionResult AddResults()
+        {
+            var dbHelper = new DatabaseHelper();
+            var result = new Result();
+            result.Date = DateTime.Today;
+            result.BonusNumber = 7;
+            result.Numbers = new List<int>
+            {
+                1,2,3,4,5,6
+            };
+            result.DrawType = DrawEnum.Lunchtime;
+            dbHelper.AddResult(result);
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult AddResult()
+        {
+            var result = new Result();
+            return View(result);
+        }
+
+        [HttpPost]
+        public ActionResult AddResult(Result result)
+        {
+            _databaseHelper.AddResult(result);
+            return View();
+        }
 
         private Ticket GetRandomNumbers(int count)
         {
@@ -101,6 +129,16 @@ namespace LotteryCalculator.Controllers
             }
 
             return GetRandomNumber(1, 49, ticket);
+
+        }
+
+        private void GetLatestNumbers()
+        {
+            string Url = "http://something";
+            var web = new HtmlWeb();
+            var htmlDoc = web.Load(Url);
+
+            HtmlAgilityPack.HtmlNode bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
 
         }
     }

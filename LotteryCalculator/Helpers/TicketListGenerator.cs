@@ -31,7 +31,7 @@ namespace LotteryCalculator.Helpers
                         }
                         else if (cell.ColumnIndex == 1)
                         {
-                            if (cell.Value == "LUNCHTIME")
+                            if (cell.Text == "LUNCHTIME")
                             {
                                 result.DrawType = DrawEnum.Lunchtime;
                             }
@@ -47,6 +47,7 @@ namespace LotteryCalculator.Helpers
                     }
 
                     resultsList.Add(result);
+                    new DatabaseHelper().AddResult(result);
                 }
             }
 
