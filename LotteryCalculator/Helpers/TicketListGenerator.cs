@@ -1,75 +1,34 @@
-﻿using Excel;
-using LotteryCalculator.Models;
+﻿using LotteryCalculator.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace LotteryCalculator.Helpers
 {
     public class TicketListGenerator
     {
-        public List<Result> GetExcelShit()
-        {
-            var resultsList = new List<Result>();
-            String path = HttpContext.Current.Server.MapPath("~/49s Results.xlsx");
-            foreach (var worksheet in Workbook.Worksheets(path))
-            {
-                foreach (var row in worksheet.Rows)
-                {
-                    var result = new Result();
-
-                    result.Numbers = new List<int>();
-
-                    foreach (var cell in row.Cells)
-                    {
-                        if (cell.ColumnIndex == 0)
-                        {
-                            var dateValue = System.Convert.ToDouble(cell.Value);
-                            var date = DateTime.FromOADate(dateValue);
-                            result.Date = date;
-                        }
-                        else if (cell.ColumnIndex == 1)
-                        {
-                            if (cell.Text == "LUNCHTIME")
-                            {
-                                result.DrawType = DrawEnum.Lunchtime;
-                            }
-                            else
-                            {
-                                result.DrawType = DrawEnum.Teatime;
-                            }
-                        }
-                        else
-                        {
-                            result.Numbers.Add(System.Convert.ToInt32(cell.Value));
-                        }
-                    }
-
-                    resultsList.Add(result);
-                    new DatabaseHelper().AddResult(result);
-                }
-            }
-
-            return resultsList;
-        }
-
-        private int numberOfTickets = 0;
-        private double totalProfit = 0;
+        private int _numberOfTickets = 0;
+        private double _totalProfit = 0;
 
         public TicketList CheckAllResultsInTicketList(List<Ticket> listOfTickets, List<Result> pastResults)
         {
-
+            var isVirgin = false;
             foreach (var ticket in listOfTickets)
             {
-                numberOfTickets++;
-
-                ticket.History = new List<double>();
+                _numberOfTickets++;
+                if (ticket.History == null || ticket.History.Count == 0)
+                {
+                    isVirgin = true;
+                    ticket.History = new List<double>();
+                }
 
                 foreach (var result in pastResults)
                 {
                     var resultMatches = result.CheckNumbers(ticket.Numbers);
-                    ticket.History.Add(resultMatches);
+                    if (isVirgin)
+                    {
+                        ticket.History.Add(resultMatches);
+                    }
                     if (resultMatches == 6)
                     {
                         ticket.Sixes++;
@@ -88,19 +47,19 @@ namespace LotteryCalculator.Helpers
                     }
                 }
 
-                ticket.Matches = System.Convert.ToInt32(ticket.History.Sum());
+                ticket.Matches = Convert.ToInt32(ticket.History.Sum());
 
                 var latestResults = pastResults[pastResults.Count - 1];
 
                 ticket.MostRecentMatches = latestResults.CheckNumbers(ticket.Numbers);
 
                 var profit = ticket.GetProfit();
-                totalProfit += profit;               
+                _totalProfit += profit;               
             }
 
             var fullTicketList = new TicketList();
             fullTicketList.Tickets = listOfTickets.OrderByDescending(x => x.Matches).ToList();
-            fullTicketList.AverageProfit = totalProfit / numberOfTickets;
+            fullTicketList.AverageProfit = _totalProfit / _numberOfTickets;
             return fullTicketList;
         }
     }

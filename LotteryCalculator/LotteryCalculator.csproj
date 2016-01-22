@@ -258,6 +258,8 @@
     <Content Include="Views\Home\GetChart.cshtml" />
     <Content Include="Views\Home\AddResults.cshtml" />
     <Content Include="Views\Home\AddResult.cshtml" />
+    <Content Include="Views\Home\LunchtimeStats.cshtml" />
+    <Content Include="Views\Home\TeatimeStats.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

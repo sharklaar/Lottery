@@ -34,6 +34,7 @@ namespace LotteryCalculator.Models
     public enum DrawEnum
     {
         Lunchtime,
-        Teatime
+        Teatime,
+        All
     }
 }

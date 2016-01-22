@@ -19,17 +19,51 @@ namespace LotteryCalculator.Controllers
         private DatabaseHelper _databaseHelper = new DatabaseHelper();
         public ActionResult Index()
         {
+            return View(GetWinnersForDrawType(DrawEnum.All));
+        }
+
+        public ActionResult LunchtimeStats()
+        {
+            ViewBag.Message = "Your application description page.";
+
+            return View(GetWinnersForDrawType(DrawEnum.Lunchtime));
+
+        }
+
+        public ActionResult TeatimeStats()
+        {
+            ViewBag.Message = "Your application description page.";
+
+            return View(GetWinnersForDrawType(DrawEnum.Teatime));
+        }
+
+        public ActionResult GetChart(Ticket ticketToChart)
+        {
+            return View(ticketToChart);
+        }
+
+        public ActionResult AddResults()
+        {
+            return View();
+        }
+
+        private TicketList GetWinnersForDrawType(DrawEnum drawType)
+        {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
             _ticketListGenerator = new TicketListGenerator();
 
-            var pastResults = _databaseHelper.GetAllResults();
+            List<Result> pastResults;
 
-            //var myNumbers = new Ticket();
-            //myNumbers.Numbers = new List<int>{
-            //    1, 6, 9, 13, 18, 
-            //};            
-            
+            if (drawType == DrawEnum.All)
+            {
+                pastResults = _databaseHelper.GetAllResults();
+            }
+            else
+            {
+                pastResults = _databaseHelper.GetAllResults().Where(x => x.DrawType == drawType).ToList();
+            }
+
             var listOfTickets = new List<Ticket>();
 
             for (var i = 0; i <= 100000; i++)
@@ -37,8 +71,6 @@ namespace LotteryCalculator.Controllers
                 var ticket = GetRandomNumbers(15);
                 listOfTickets.Add(ticket);
             }
-
-            //listOfTickets.Add(myNumbers);
 
             var fullTicketList = new TicketList();
             fullTicketList = _ticketListGenerator.CheckAllResultsInTicketList(listOfTickets, pastResults);
@@ -54,40 +86,13 @@ namespace LotteryCalculator.Controllers
             topTen.Tickets = topHundred.Tickets.Take(10).ToList();
 
             var lastTenResults = pastResults.OrderByDescending(t => t.Date).Take(10).ToList();
-            var winners = _ticketListGenerator.CheckAllResultsInTicketList(topTen.Tickets, pastResults);
+            var winners = _ticketListGenerator.CheckAllResultsInTicketList(topTen.Tickets, lastTenResults);
 
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
             winners.secondsTaken = elapsedMs.ToString();
 
-            return View(winners);
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult GetChart(Ticket ticketToChart)
-        {
-            return View(ticketToChart);
-        }
-
-        public ActionResult AddResults()
-        {
-            var dbHelper = new DatabaseHelper();
-            var result = new Result();
-            result.Date = DateTime.Today;
-            result.BonusNumber = 7;
-            result.Numbers = new List<int>
-            {
-                1,2,3,4,5,6
-            };
-            result.DrawType = DrawEnum.Lunchtime;
-            dbHelper.AddResult(result);
-            return View();
+            return winners;
         }
 
         [HttpGet]
@@ -129,16 +134,6 @@ namespace LotteryCalculator.Controllers
             }
 
             return GetRandomNumber(1, 49, ticket);
-
-        }
-
-        private void GetLatestNumbers()
-        {
-            string Url = "http://something";
-            var web = new HtmlWeb();
-            var htmlDoc = web.Load(Url);
-
-            HtmlAgilityPack.HtmlNode bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
 
         }
     }
