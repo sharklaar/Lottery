@@ -68,7 +68,7 @@ namespace LotteryCalculator.Controllers
 
             for (var i = 0; i <= 100000; i++)
             {
-                var ticket = GetRandomNumbers(15);
+                var ticket = GetRandomNumbers(10);
                 listOfTickets.Add(ticket);
             }
 
@@ -91,7 +91,7 @@ namespace LotteryCalculator.Controllers
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
             winners.secondsTaken = elapsedMs.ToString();
-
+            winners.Tickets.OrderByDescending(x => x.Sevens).ThenByDescending(x => x.Sixes).ThenByDescending(x => x.Fives).ThenByDescending(x => x.Fours);
             return winners;
         }
 

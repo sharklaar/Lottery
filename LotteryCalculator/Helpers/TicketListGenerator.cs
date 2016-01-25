@@ -7,8 +7,8 @@ namespace LotteryCalculator.Helpers
 {
     public class TicketListGenerator
     {
-        private int _numberOfTickets = 0;
-        private double _totalProfit = 0;
+        private int _numberOfTickets;
+        private double _totalProfit;
 
         public TicketList CheckAllResultsInTicketList(List<Ticket> listOfTickets, List<Result> pastResults)
         {
@@ -57,9 +57,11 @@ namespace LotteryCalculator.Helpers
                 _totalProfit += profit;               
             }
 
-            var fullTicketList = new TicketList();
-            fullTicketList.Tickets = listOfTickets.OrderByDescending(x => x.Matches).ToList();
-            fullTicketList.AverageProfit = _totalProfit / _numberOfTickets;
+            var fullTicketList = new TicketList
+            {
+                Tickets = listOfTickets.OrderByDescending(x => x.Sevens).ThenByDescending(x => x.Sixes).ThenByDescending(x => x.Fives).ThenByDescending(x => x.Fours).ToList(),
+                AverageProfit = _totalProfit/_numberOfTickets
+            };
             return fullTicketList;
         }
     }

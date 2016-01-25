@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@using Chart.Mvc.ComplexChart
+@using Chart.Mvc.Extensions
+@model LotteryCalculator.Models.TicketList
+
+@{
+    var chartNumber = 0;
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+@foreach (var ticket in Model.Tickets)
+{
+    var chart = new LineChart();
+
+    chartNumber++;
+
+    ticket.Numbers = ticket.Numbers.OrderBy(x => x).ToList();
+    <a href="@Url.Action("GetChart", "Home", new { ticketToChart = ticket })">
+        <div class="ticket">
+            @foreach (var number in ticket.Numbers)
+            {
+                <span style="display: inline-block;">@number.ToString() </span>
+            }
+            <span style="display:inline-block;">| Matches: @ticket.Matches | Fours: @ticket.Fours | Fives: @ticket.Fives | Sixes: @ticket.Sixes | Sevens: @ticket.Sevens | Profit/Loss: @ticket.GetProfit()</span>
+            <span style="display:inline-block;">| Matches: @ticket.MostRecentMatches</span>
+        </div>
+    </a>
+            var resultNumbers = new List<string>();
+            for (var i = 1; i <= ticket.History.Count; i++)
+            {
+                resultNumbers.Add(i.ToString());
+            }
+            chart.ComplexData.Labels.AddRange(resultNumbers);
+            chart.ComplexData.Datasets.Add(new ComplexDataset
+            {
+                Data = new List<double>(ticket.History),
+                Label = "Chart" + chartNumber,
+                FillColor = "rgba(220,220,220,0.2)",
+                StrokeColor = "rgba(220,220,220,1)",
+                PointColor = "rgba(220,220,220,1)",
+                PointStrokeColor = "#fff",
+                PointHighlightFill = "#fff",
+                PointHighlightStroke = "rgba(220,220,220,1)"
+            });
+            var canvasName = string.Format("Chart{0}", chartNumber);
+
+            <canvas id="@canvasName" width="1200" height="400"></canvas>
+            @Html.CreateChart(canvasName, chart)
+}
+
+<p>Average profit per ticket: £@Model.AverageProfit</p>
+<p>time taken: @Model.secondsTaken ms</p>
